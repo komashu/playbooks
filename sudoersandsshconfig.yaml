@@ -1,0 +1,22 @@
+  
+- hosts: all
+  user: polemarch
+  tasks:
+  - name: Sudoers | update sudoers file and validate
+    lineinfile: 
+      path: /etc/sudoers
+      backup: yes
+      insertafter=EOF
+      regexp: '^%sudo ALL='
+      line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+      state=present"
+    validate: /usr/sbin/visudo -cf %s
+    sudo: true
+- name: Update sshd_config
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    backup: yes
+    block: |
+      Match Group sudoers
+      PasswordAuthentication no
+    validate: /usr/sbin/sshd -T -f %s

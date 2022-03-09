@@ -1,0 +1,46 @@
+- hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Updates for Mac
+      homebrew:
+        update_homebrew: yes
+        upgrade_all: yes
+      when: ansible_facts['os_family'] == "Darwin"
+
+    - name: Updates for Windows
+      win_updates:
+        category_names:
+            - SecurityUpdates
+            - CriticalUpdates
+            - UpdateRollups
+      when: ansible_facts['os_family'] == "Windows"
+
+    - name: Updates for Security Onion
+      shell: soup
+      when: ansible_facts['ansible_hostname'] == "shunion"
+
+    - name: Updates for FreeBSD
+      pkgng:
+        name: "*"
+        state: latest
+      when: ansible_facts['os_family'] == "FreeBSD"
+
+    - name: Updates for Debian
+      apt:
+        update_cache: yes
+        name: "*"
+        state: latest
+        autoclean: yes
+        autoremove: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Updates for RHEL
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_facts['os_family'] == "RedHat"
+
+
+
