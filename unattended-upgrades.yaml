@@ -1,0 +1,22 @@
+---
+- name: Ensure unattended-upgrades is installed and enabled
+  hosts: all
+  become: true
+  tasks:
+    - name: Install unattended-upgrades package
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Enable and start unattended-upgrades service
+      systemd:
+        name: unattended-upgrades
+        enabled: yes
+        state: started
+
+    - name: Ensure automatic updates are configured
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
